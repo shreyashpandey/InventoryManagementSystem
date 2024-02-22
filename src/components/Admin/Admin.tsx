@@ -17,7 +17,13 @@ import { useState, useEffect } from "react";
 import { apiCalls } from "../../utils";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import { getFormControlLabelUtilityClasses } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
+import CategoryIcon from '@mui/icons-material/Category';
+
 const bull = (
   <Box
     component="span"
@@ -74,7 +80,7 @@ const vals = [
     price: "$0",
   },
 ];
-export default function Admin() {
+export default function Admin(props:any) {
   interface vals {
     name: string;
     category: string;
@@ -134,16 +140,16 @@ export default function Admin() {
     <>
       <Grid container spacing={2}>
         <Grid item xs={3}>
-          <Card sx={{ minWidth: 150 }}>
+          <Card sx={{ minWidth: 150,minHeight:150  }}>
             <CardContent>
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
                 gutterBottom
               >
-                TotalProducts
+                <ShoppingCartIcon/>Total Products
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="h4">
                 {rows.length}
               </Typography>
             </CardContent>
@@ -151,16 +157,16 @@ export default function Admin() {
            
         </Grid>
         <Grid item xs={3}>
-        <Card sx={{ minWidth: 150 }}>
+        <Card sx={{ minWidth: 150,minHeight:150 }}>
             <CardContent>
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
                 gutterBottom
               >
-                Total Store Value
+                <CurrencyExchangeIcon/>Total Store Value
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="h4">
                 {rows.reduce((acc:number,prev:any)=>acc+parseInt(prev.price.substring(1)),0)}
               </Typography>
             </CardContent>
@@ -168,16 +174,16 @@ export default function Admin() {
            
         </Grid>
         <Grid item xs={3}>
-        <Card sx={{ minWidth: 150 }}>
+        <Card sx={{ minWidth: 150,minHeight:150  }}>
             <CardContent>
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
                 gutterBottom
               >
-                Out of Stocks
+                <RemoveShoppingCartIcon/>Out of Stocks
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="h4">
                 {rows.filter((f:vals)=>f.quantity==0).length}
               </Typography>
             </CardContent>
@@ -185,16 +191,16 @@ export default function Admin() {
            
         </Grid>
         <Grid item xs={3}>
-        <Card sx={{ minWidth: 150 }}>
+        <Card sx={{ minWidth: 150,minHeight:150  }}>
             <CardContent>
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
                 gutterBottom
               >
-                No of Category
+                <CategoryIcon/>No of Category
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="h4">
                 {uniqueCategory()}
               </Typography>
             </CardContent>
@@ -224,12 +230,12 @@ export default function Admin() {
                       {row.name}
                     </TableCell>
                     <TableCell align="right">{row.category}</TableCell>
-                    <TableCell align="right">{row.value}</TableCell>
-                    <TableCell align="right">{row.quantity}</TableCell>
                     <TableCell align="right">{row.price}</TableCell>
+                    <TableCell align="right">{row.quantity}</TableCell>
+                    <TableCell align="right">{row.value}</TableCell>
                     <TableCell align="right">
-                      <button onClick={() => handleChange(index)}>Edit</button>
-                      <button onClick={() => handleDelete(index)}>Delete</button>
+                      <button disabled={props.user=="Admin"?false:true} onClick={() => handleChange(index)}><EditIcon/></button>
+                      <button disabled={props.user=="Admin"?false:true} onClick={() => handleDelete(index)}><DeleteIcon/></button>
                     </TableCell>
                   </TableRow>
                 ))}
