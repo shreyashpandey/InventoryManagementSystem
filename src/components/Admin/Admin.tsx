@@ -1,7 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
+// import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -23,15 +23,6 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import CategoryIcon from '@mui/icons-material/Category';
-
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -43,43 +34,43 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const vals = [
-  {
-    name: "Bluetooth",
-    category: "Electronic",
-    value: "$150",
-    quantity: 5,
-    price: "$30",
-  },
-  {
-    name: "Edifier M43560",
-    category: "Electronic",
-    value: "0",
-    quantity: 0,
-    price: "$0",
-  },
-  {
-    name: "Sony 4k ultra 55 inch TV",
-    category: "Electronic",
-    value: "$1190",
-    quantity: 17,
-    price: "$70",
-  },
-  {
-    name: "Samsumg 55 inch TV",
-    category: "Electronic",
-    value: "$600",
-    quantity: 50,
-    price: "$12",
-  },
-  {
-    name: "samsumg S34 Ultra",
-    category: "phone",
-    value: "$0",
-    quantity: 0,
-    price: "$0",
-  },
-];
+// const vals = [
+//   {
+//     name: "Bluetooth",
+//     category: "Electronic",
+//     value: "$150",
+//     quantity: 5,
+//     price: "$30",
+//   },
+//   {
+//     name: "Edifier M43560",
+//     category: "Electronic",
+//     value: "0",
+//     quantity: 0,
+//     price: "$0",
+//   },
+//   {
+//     name: "Sony 4k ultra 55 inch TV",
+//     category: "Electronic",
+//     value: "$1190",
+//     quantity: 17,
+//     price: "$70",
+//   },
+//   {
+//     name: "Samsumg 55 inch TV",
+//     category: "Electronic",
+//     value: "$600",
+//     quantity: 50,
+//     price: "$12",
+//   },
+//   {
+//     name: "samsumg S34 Ultra",
+//     category: "phone",
+//     value: "$0",
+//     quantity: 0,
+//     price: "$0",
+//   },
+// ];
 export default function Admin(props:any) {
   interface vals {
     name: string;
@@ -126,7 +117,7 @@ export default function Admin(props:any) {
   }
   function handleDelete(index:number)
   {
-    let tempRows=rows.filter((f:any,i:number)=>i!=index);
+    let tempRows=rows.filter((f:any,i:number)=>f&&i!=index);
     setRows(tempRows);
   }
   function uniqueCategory()
