@@ -23,6 +23,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import CategoryIcon from '@mui/icons-material/Category';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -80,9 +82,14 @@ export default function Admin(props:any) {
     price: string;
   }
   const [rows, setRows] = useState<vals[]>([]);
+  const [disRows, setDisRows] = useState<vals[]>([]);
+  // const [editedRows,setEditedRows]=useState<vals[]>([]);
+  const [calcRows,setCalcRows]=useState<vals[]>([]);
   const [modal, setModal] = useState<boolean>(false);
   const [modalVal, setModalVal] = useState<any>({});
   const [modalIndex,setModalIndex]=useState<number>(-1);
+  const [disable,setDisable]=useState<boolean[]>([]);
+  let rowValue:vals[];
   useEffect(() => {
     console.log("hh");
     const fetchData = async () => {
@@ -90,6 +97,14 @@ export default function Admin(props:any) {
       const apiCalled = await apiCalls();
       console.log("Api Called ", apiCalled);
       setRows(apiCalled.data);
+      setDisRows(apiCalled.data);
+      // setEditedRows(apiCalled.data);
+      setCalcRows(apiCalled.data);
+      let disData:boolean[]=[];
+      apiCalled.data.map((m:vals,i:number)=>{if(m)disData[i]=false});
+      // console.log(disData);
+      setDisable(disData);
+      console.log(rowValue)
     };
     fetchData();
   }, []);
@@ -104,11 +119,12 @@ export default function Admin(props:any) {
     setModalIndex(index);
     setModal(true);
   }
+  // modal submission is present here
   function handleModalSubmit(){
       console.log("Modal Index ",modalIndex);
       const tempRows=[...rows];
       tempRows[modalIndex]=modalVal;
-      setRows(tempRows);
+      setDisRows(tempRows);
       setModal(false);
   }
   function handleModalChange(e:React.ChangeEvent<HTMLInputElement>){
@@ -118,12 +134,28 @@ export default function Admin(props:any) {
   function handleDelete(index:number)
   {
     let tempRows=rows.filter((f:any,i:number)=>f&&i!=index);
+    let calcTempRows=calcRows.filter((f:any,i:number)=>f&&i!=index);
+    let disTempRows=calcRows.filter((f:any,i:number)=>f&&i!=index);
     setRows(tempRows);
+    setDisRows(disTempRows);
+    setCalcRows(calcTempRows);
+    
   }
+  // disable logic is handled over here
+  function handleDisable(index:number)
+  {
+    let tempVal=disable;
+    tempVal[index]=!tempVal[index];
+    setDisable([...tempVal]);
+    console.log("Dis Rows ",disRows.filter((f:vals,i:number)=>f&&!tempVal[i]))
+    // setDisRows(disRows.filter((f:vals,i:number)=>f&&i!=index))
+    setCalcRows(disRows.filter((f:vals,i:number)=>f&&!tempVal[i]))
+  }
+  // will figure out the unique categories through this function
   function uniqueCategory()
   {
     let set=new Set();
-    rows.map((m:vals)=>set.add(m.category))
+    calcRows.map((m:vals)=>set.add(m.category))
     return set.size;
   }
 
@@ -132,6 +164,7 @@ export default function Admin(props:any) {
       <Grid container spacing={2}>
         <Grid item xs={3}>
           <Card sx={{ minWidth: 150,minHeight:150  }}>
+            
             <CardContent>
               <Typography
                 sx={{ fontSize: 14 }}
@@ -141,7 +174,7 @@ export default function Admin(props:any) {
                 <ShoppingCartIcon/>Total Products
               </Typography>
               <Typography variant="h4">
-                {rows.length}
+                {calcRows.length}
               </Typography>
             </CardContent>
           </Card>
@@ -158,7 +191,7 @@ export default function Admin(props:any) {
                 <CurrencyExchangeIcon/>Total Store Value
               </Typography>
               <Typography variant="h4">
-                {rows.reduce((acc:number,prev:any)=>acc+parseInt(prev.price.substring(1)),0)}
+                {calcRows.reduce((acc:number,prev:any)=>acc+parseInt(prev.price.substring(1)),0)}
               </Typography>
             </CardContent>
           </Card>
@@ -175,7 +208,7 @@ export default function Admin(props:any) {
                 <RemoveShoppingCartIcon/>Out of Stocks
               </Typography>
               <Typography variant="h4">
-                {rows.filter((f:vals)=>f.quantity==0).length}
+                {calcRows.filter((f:vals)=>f.quantity==0).length}
               </Typography>
             </CardContent>
           </Card>
@@ -208,14 +241,15 @@ export default function Admin(props:any) {
                   <TableCell align="right">Price</TableCell>
                   <TableCell align="right">Quantity</TableCell>
                   <TableCell align="right">Value</TableCell>
-                  <TableCell align="right">Action</TableCell>
+                  <TableCell align="center">Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row: any, index: number) => (
+                {disRows.map((row: any, index: number) => (
+                  disable[index]?
                   <TableRow
                     key={row.name}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 },backgroundColor:'#aaa'}}
                   >
                     <TableCell component="th" scope="row">
                       {row.name}
@@ -225,10 +259,41 @@ export default function Admin(props:any) {
                     <TableCell align="right">{row.quantity}</TableCell>
                     <TableCell align="right">{row.value}</TableCell>
                     <TableCell align="right">
-                      <button disabled={props.user=="Admin"?false:true} onClick={() => handleChange(index)}><EditIcon/></button>
+                      <button disabled={true} onClick={() => handleChange(index)}><EditIcon/></button>
+                      <>
+                      {
+                        !disable[index]?
+                        <button disabled={props.user=="Admin"?false:true} onClick={() => handleDisable(index)}><VisibilityIcon/></button>
+                        :<button disabled={props.user=="Admin"?false:true} onClick={() => handleDisable(index)}><VisibilityOffIcon/></button>
+                      }
+                      </>
                       <button disabled={props.user=="Admin"?false:true} onClick={() => handleDelete(index)}><DeleteIcon/></button>
                     </TableCell>
                   </TableRow>
+                  :
+                  <TableRow
+                  key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.name}
+                  </TableCell>
+                  <TableCell align="right">{row.category}</TableCell>
+                  <TableCell align="right">{row.price}</TableCell>
+                  <TableCell align="right">{row.quantity}</TableCell>
+                  <TableCell align="right">{row.value}</TableCell>
+                  <TableCell align="right">
+                    <button disabled={props.user=="Admin"?false:true} onClick={() => handleChange(index)}><EditIcon/></button>
+                    <>
+                    {
+                    !disable[index]?
+                    <button disabled={props.user=="Admin"?false:true} onClick={() => handleDisable(index)}><VisibilityIcon/></button>
+                    :<button disabled={props.user=="Admin"?false:true} onClick={() => handleDisable(index)}><VisibilityOffIcon/></button>
+                    }
+                    </>
+                    <button disabled={props.user=="Admin"?false:true} onClick={() => handleDelete(index)}><DeleteIcon/></button>
+                  </TableCell>
+                </TableRow>
                 ))}
               </TableBody>
             </Table>
@@ -243,10 +308,10 @@ export default function Admin(props:any) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h3" component="h2">
+            <Typography id="modal-modal-title" variant="h4" component="h2" sx={{color:'#000'}}>
               Edit product
             </Typography>
-            <Typography id="m1" variant="h6" component="h2">
+            <Typography id="m1" variant="h6" component="h2" sx={{color:'#000'}}>
               {modalVal.name}
             </Typography>
             <Grid container spacing={1}>
