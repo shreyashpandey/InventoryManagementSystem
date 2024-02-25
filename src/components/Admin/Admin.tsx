@@ -135,8 +135,14 @@ export default function Admin(props:any) {
   function handleDelete(index:number)
   {
     let tempRows=rows.filter((f:any,i:number)=>f&&i!=index);
-    let calcTempRows=calcRows.filter((f:any,i:number)=>f&&i!=index);
-    let disTempRows=calcRows.filter((f:any,i:number)=>f&&i!=index);
+    let calcTempRows=rows.filter((f:any,i:number)=>f&&i!=index);
+    let disTempRows=disRows.filter((f:any,i:number)=>f&&i!=index);
+    console.log("Index ",index);
+    console.log("Calc Temp Rows ",calcTempRows);
+    console.log("Dis Temp Rows ",disTempRows);
+    let tempDisable=[...disable];
+    tempDisable[index]=false;
+    setDisable(tempDisable);
     setRows(tempRows);
     setDisRows(disTempRows);
     setCalcRows(calcTempRows);
@@ -149,7 +155,7 @@ export default function Admin(props:any) {
     tempVal[index]=!tempVal[index];
     setDisable([...tempVal]);
     console.log("Dis Rows ",disRows.filter((f:vals,i:number)=>f&&!tempVal[i]))
-    // setDisRows(disRows.filter((f:vals,i:number)=>f&&i!=index))
+    // setDisRows(rows.filter((f:vals,i:number)=>f&&i!=index))
     setCalcRows(disRows.filter((f:vals,i:number)=>f&&!tempVal[i]))
   }
   // will figure out the unique categories through this function
@@ -192,7 +198,7 @@ export default function Admin(props:any) {
                 <CurrencyExchangeIcon/>Total Store Value
               </Typography>
               <Typography variant="h4">
-                {calcRows.reduce((acc:number,prev:any)=>acc+parseInt(prev.price.substring(1)),0)}
+                {calcRows.reduce((acc:number,prev:any)=>acc+parseInt(prev.value.charAt(0)=='$'?prev.value.substring(1):prev.value),0)}
               </Typography>
             </CardContent>
           </Card>
@@ -244,9 +250,10 @@ export default function Admin(props:any) {
                   <TableCell align="right">Value</TableCell>
                   <TableCell align="center">Action</TableCell>
                 </TableRow>
+                {/*  */}
               </TableHead>
               <TableBody>
-                {disRows.map((row: any, index: number) => (
+                {rows.map((row: any, index: number) => (
                   disable[index]?
                   <TableRow
                     key={row.name}
