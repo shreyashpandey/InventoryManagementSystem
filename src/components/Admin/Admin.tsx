@@ -125,6 +125,7 @@ export default function Admin(props:any) {
       const tempRows=[...rows];
       tempRows[modalIndex]=modalVal;
       setCalcRows([...tempRows]);
+      setRows(tempRows);
       setDisRows(tempRows);
       setModal(false);
   }
